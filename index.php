@@ -16,10 +16,10 @@ session_start();
     <title>Tracker|Demo</title>
     <link rel="stylesheet" type="text/css" href="#" />
     <link rel="stylesheet" href="themes/default/jquery-ui-1.9.1.custom.min.css" />
-	<script type="text/javascript" src="inc/js/jquery.min.js"></script>
-    <script type="text/javascript" src="inc/js/jquery-ui-1.9.1.custom.min.js"></script>
-    <script type="text/javascript" src="inc/js/apng-canvas.min.js"></script>
-	<script type="text/javascript" src="inc/js/UTask.js"></script>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.9.1.custom.min.js"></script>
+    <script type="text/javascript" src="js/apng-canvas.min.js"></script>
+	<script type="text/javascript" src="js/UTask.js"></script>
     <script type="text/javascript">
         function Message(msg){
             if ($("body div.msgBG div.msg").length > 0) { setTimeout(function(){Message(msg);}, 5000); return; }

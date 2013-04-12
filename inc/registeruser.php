@@ -7,34 +7,28 @@
  * Last Modified: 3/18/2013 at 2:07 PM
  * Last Modified by Daniel Vidmar.
  */
+ session_start();
  require_once("connect.php");
  require_once("userfunc.php");
- require_once("password.php");
- $c = new Connect();
- $user = new USERFUNC();
- $hasher = new PasswordHasher();
- $t = $c->tablePrefix."_users";
+ $connect = new Connect();
+ $c = $connect->connect();
  
  if(isset($_POST["user"]))
  {
 	$username = $_POST["user"];
-	$stmt = $c->connect()->prepare("SELECT username FROM $t WHERE username = ?");
-	$stmt->bind_param("s", $username);
-	$stmt->execute();
-	$stmt->bind_result($result);
-	$num_row = $stmt->num_rows($result);
-	$stmt->fetch();
-	if($num_row != 0) {
+	if(User::exists($username) == "false") {
 		if(isset($_POST['email'])) {
 			if(isset($_POST['pass'])) {
 				if(isset($_POST['conpass'])) {
 					if($_POST['pass'] == $_POST['conpass']) {
 						$user = $_POST["user"];
-						$pass = $hasher->hashPass($_POST["pass"]);
+						$pass = hash( 'sha256', $_POST['pass'] );;
 						$email = $_POST["email"];
 						$date = date("Y-m-d");
-						$ip = $user->getIP();
-						$user->add($user, $pass, $date, $ip, $email);
+						$ip = User::getIP();
+						$activationKey = User::generateActivationKey();
+						User::add($user, $pass, $date, $date, $ip, $email, $activationKey);
+						User::sendVerification($email, $activationKey);
 						echo 'ALLO';
 					} else {
 						echo '!PASS';
@@ -54,3 +48,4 @@
  } else {
 	echo 'NOUSER';
  }
+ ?>

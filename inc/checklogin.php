@@ -7,29 +7,25 @@
  * Last Modified: 3/18/2013 at 6:12 PM
  * Last Modified by Daniel Vidmar.
  */
-require_once("inc/connect.php");
-require_once("inc/password.php");
 session_start();
-$username = $_POST["user"];
-$password = $_POST["pass"];
-
-$c = new Connect();
-$hasher = new PasswordHasher();
-$t = $c->tablePrefix;
-$stmt = $c->connect()->prepare("SELECT username, password FROM ".$t."_users WHERE username = ?");
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$stmt->bind_result($result, $result1);
-$num_row = $stmt->num_rows($result);
-$stmt->fetch();
-if($num_row != 0) {
-	if($hasher->checkPassword($result1, $password) != 0) {
-		$_SESSION["username"] = $result;
-		echo 'ALLO';
+require_once("userfunc.php");
+if(isset($_POST["user"]) && isset($_POST['pass']))
+ {
+	$username = $_POST["user"];
+	$password = $_POST["pass"];
+	if(User::validatePassword($username, $password) == "true") {
+		if(User::activated($username) == "true") {
+			User::login($username);
+			$_SESSION['username'] = $username;
+			$_SESSION['last_active'] = time();
+			echo "ALLO";
+		} else {
+			echo "ACT";
+		}
 	} else {
-		echo 'INCORRECT';
+		echo "GTFO";
 	}
 } else {
-	echo 'NOT';
+	echo "GTFO";
 }
 ?>

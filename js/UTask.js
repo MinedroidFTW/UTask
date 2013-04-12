@@ -32,13 +32,14 @@ $(document).ready(function(){
 			$("#msg").addClass("errorMSG");
 			$(".errorMSG").html("Username must be at least 4 characters long.");
 		} else {
+			var username = $("#registerForm #username").val();
 			$("#msg").removeClass("successMSG");
 			$("#msg").removeClass("errorMSG");
 			$("#msg").addClass("generalMSG");
 			$(".generalMSG").html("Checking availability...");
 			$.ajax({
             type: "POST",
-            url: "inc/checkuser.php",
+            url: "../inc/checkuser.php",
             data: "user="+username,
             success: function(html){
                 if(html=='EH')
@@ -53,7 +54,9 @@ $(document).ready(function(){
 					$("#msg").addClass("errorMSG");
 					$(".errorMSG").html("Username is not available.");
 				}
-		});
+			}
+			});
+	   }
 	});
 	$("#registerForm #confirmPassword").change(function() {
 		var password = $("#registerForm #password").val();
@@ -76,18 +79,23 @@ $(document).ready(function(){
         var password = $("#loginForm #password").val();
         $.ajax({
             type: "POST",
-            url: "inc/checklogin.php",
+            url: "../inc/checklogin.php",
             data: "user="+username+"&pass="+password,
             success: function(html){
                 if(html=='GTFO')
                 {
-					$("#msg").removeClass("generalMSG");
-					$("#msg").removeClass("successMSG");
-					$("#msg").addClass("errorMSG");
-					$(".errorMSG").html("Wrong username or password entered!");
-                } else {
-                    $("#loginForm").fadeOut("normal");
-                    $("h2").html("Welcome, " + username + ".<a id='logout' href='logout.php'>Log out</a>.");
+					$("#lmsg").removeClass("generalMSG");
+					$("#lmsg").removeClass("successMSG");
+					$("#lmsg").addClass("errorMSG");
+					$("#loginForm .errorMSG").html("Wrong username or password entered!");
+                } else if(html=='ACT') {
+					$("#lmsg").removeClass("generalMSG");
+					$("#lmsg").removeClass("successMSG");
+					$("#lmsg").addClass("errorMSG");
+					$("#loginForm .errorMSG").html("You have not activated your account!");
+				} else {
+					$("#loginForm").fadeOut("normal");
+                    $(".login").html("Welcome, "+username+". View your <a href='#'>Dashboard</a> or <a href='logout.php' id='logout'>Logout</a>.");
                 }
             }
         });
@@ -100,19 +108,21 @@ $(document).ready(function(){
 		var email = $("#registerForm #email").val();
         $.ajax({
             type: "POST",
-            url: "inc/registeruser.php",
-            data: "user="+username+"&pass="+password+"&conpass="confirmpassword+"&email="email,
+            url: "../inc/registeruser.php",
+            data: "user="+username+"&pass="+password+"&conpass="+confirmpassword+"&email="+email,
             success: function(html){
-                if(html=='GTFO')
+				if(html=='ALLO')
                 {
+					$("#msg").removeClass("successMSG");
+					$("#msg").removeClass("errorMSG");
+					$("#msg").addClass("generalMSG");
+					$(".generalMSG").html("An activation link has been sent to "+email+".");
+                } else {
 					$("#msg").removeClass("generalMSG");
 					$("#msg").removeClass("successMSG");
 					$("#msg").addClass("errorMSG");
-					$(".errorMSG").html("Wrong username or password entered!");
-                } else {
-                    $("#loginForm").fadeOut("normal");
-                    $("h2").html("Welcome, " + username + ".<a id='logout' href='logout.php'>Log out</a>.");
-                }
+					$(".errorMSG").html("I'm sorry, but there was a problem registering you!");
+				}
             }
         });
         return false;
